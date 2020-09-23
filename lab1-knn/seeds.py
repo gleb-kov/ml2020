@@ -10,6 +10,7 @@ import math
 filename = 'seeds.csv'
 target = [11.26,13.01,0.8355,5.186,2.71,5.335,5.092]
 #target = [13.94,14.17,0.8728,5.585,3.15,2.124,5.012]
+#target = [20.97,17.25,0.8859,6.563,3.991,4.677,6.316]
 classes = 3
 
 ###############################################################################
@@ -77,12 +78,12 @@ def fscore(dataset, classes, map_predict, distStr, kernelStr, windowStr, window)
         cm[predict - 1][int(dataset[i][-1]) - 1] += 1
     return calc_fscore(cm)
 
-def fscore_step(dataset, classes, map_predict, distStr, kernelStr, windowStr):
+def fscore_step(dataset, classes, score_index, map_predict, distStr, kernelStr, windowStr):
     x = []
     y = []
     for w in range(10):
         fs = fscore(dataset, classes, map_predict, distStr, kernelStr, windowStr, w)
-        y.append(fs[0])
+        y.append(fs[score_index])
         x.append(w)
     plt.scatter(x, y)
     plt.show()
@@ -101,7 +102,8 @@ def naive_reg(dataset, target):
 
     predict = non_param_reg(dataset, len(dataset[0]) - 1, target, distStr, kernelStr, windowStr, window)
     predict = map_predict(predict)
-    fscore_step(dataset, classes, map_predict, distStr, kernelStr, windowStr)
+    fscore_step(dataset, classes, 0, map_predict, distStr, kernelStr, windowStr)
+    fscore_step(dataset, classes, 1, map_predict, distStr, kernelStr, windowStr)
     print("Naive regression: class# ", predict)
 
 def onehot_reg(dataset, target):
@@ -111,12 +113,10 @@ def onehot_reg(dataset, target):
     window = 5
 
     def map_predict(p):
-        p1 = round(p)
-        if p1 <= 1:
-            return 1
-        if p1 > classes:
-            return classes
-        return p1
+        p = round(p)
+        p = max(p, 1)
+        p = min(p, classes)
+        return p
 
     best = 1
     best_predict = 0
@@ -139,6 +139,7 @@ def onehot_reg(dataset, target):
         if predict > best_predict:
             best_predict = predict
             best = classes + 1 - c
+    #fscore_step(newdata, classes, map_predict, distStr, kernelStr, windowStr)
     print("Onehot regression: class# ", best, " prediction: ", predict)
 
 def main():
