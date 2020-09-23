@@ -150,6 +150,7 @@ def main():
     windowStr = str(input())
     window = float(input())
 
+    # m -- value column
     res = non_param_reg(dataset, m, query, distStr, kernelStr, windowStr, window)
 
     print(res)

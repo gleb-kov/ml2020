@@ -7,9 +7,10 @@ import math
 ###############################################################################
 
 ## Config
-filename = 'heart-switzerland.csv'
-target = [51,1,4,13,1,2,36,2,19,2,1,1]
-classes = 5
+filename = 'seeds.csv'
+target = [11.26,13.01,0.8355,5.186,2.71,5.335,5.092]
+#target = [13.94,14.17,0.8728,5.585,3.15,2.124,5.012]
+classes = 3
 
 ###############################################################################
 
@@ -46,9 +47,7 @@ def draw_plot(dataset, feature1N, feature2N, target):
     class_to_color = {
         1: "green",
         2: "blue",
-        3: "yellow",
-        4: "red",
-        5: "orange",
+        3: "red",
     }
 
     values = get_column(dataset, -1)
@@ -75,7 +74,7 @@ def fscore(dataset, classes, map_predict, distStr, kernelStr, windowStr, window)
     for i in range(len(dataset)):
         predict = non_param_reg(dataset[:i] + dataset[i+1:], len(dataset[0]) - 1, dataset[i], distStr, kernelStr, windowStr, window)
         predict = map_predict(predict)
-        cm[predict - 1][dataset[i][-1] - 1] += 1
+        cm[predict - 1][int(dataset[i][-1]) - 1] += 1
     return calc_fscore(cm)
 
 def fscore_step(dataset, classes, map_predict, distStr, kernelStr, windowStr):
