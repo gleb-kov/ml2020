@@ -19,13 +19,25 @@ def tricky_rand(i, m):
 
 def predict(k, y, a, b):
     n = len(k)
-    p = []
+    p = [b] * n
     for i in range(n):
-        res = b
         for j in range(n):
-            res += a[j] * y[j] * k[j][i]
-        p.append(res)
+            p[i] += a[j] * y[j] * k[j][i]
     return p
+
+def count_w(params, y, a):
+    n = len(params[0])
+    w = [0] * n
+    for i in range(n):
+        for j in range(len(params)):
+            w[i] += a[j] * y[j] * params[j][i]
+    return w
+
+def predict_w(w, w0, x):
+    res = w0
+    for i in range(len(x)):
+        res += w[i] * x[i]
+    return res
 
 def prec(k, y, a, b):
     p = predict(k, y, a, b)
@@ -34,12 +46,21 @@ def prec(k, y, a, b):
         if p[i] * y[i] < 0:
             errors += 1
     return 1 - errors / n
- 
+
+def prec_w(w, w0, params, y):
+    n, errors = len(params), 0
+    for i in range(n):
+        yp = predict_w(w, w0, params[i])
+        if yp * y[i] < 0:
+            errors += 1
+    return 1 - errors / n
+
+# http://cs229.stanford.edu/materials/smo.pdf
 # k[i][j] = kernel(i, j)
 # y = classes
-# c = 
+# c = hyper-param 
 # max_passes = iter limit
-# tol = tolerance hyper-param
+# tol = numeric tolerance
 def smo(k, y, c, max_passes, tol = -1e-8, enable_pred = False, pred_period = 100, pred_ratio = 0.05):
     n = len(k)
  
@@ -138,6 +159,39 @@ def build_kernel_matrix(params, kernel):
         k.append(k_i)
     return k
 
+def brute_smo(params, values):
+    def scalar(x1, x2):
+        return poly_kernel(x1, x2, 1.0, 0.0)
+    def poly21(x1, x2):
+        return poly_kernel(x1, x2, 2.0, 1.0)
+    def poly41(x1, x2):
+        return poly_kernel(x1, x2, 4.0, 1.0)
+
+    k_funcs_str = ['scalar', 'square_kernel', 'exp_kernel', 'poly21', 'poly41']
+    k_funcs = [scalar, square_kernel, exp_kernel, poly21, poly41]
+
+    valid_parts = 3
+
+    for c in [0.5, 1.0, 1.5, 2.0, 2.5, 5.0]:
+        for i in range(len(k_funcs)):
+            n = len(values)
+            part = n / valid_parts
+            total_pred = 0.0
+            for vp in range(valid_parts):
+                l, r = int(vp * part), int(vp * part + part)
+                train_x = params[0:l] + params[r:n]
+                train_y = values[0:l] + values[r:n]
+                test_x = params[l:r]
+                test_y = values[l:r]
+
+                train_k = build_kernel_matrix(train_x, k_funcs[i])
+                a, b = smo(train_k, train_y, c, 200)
+                w = count_w(train_x, train_y, a)
+                pw = prec_w(w, b, test_x, test_y)
+                total_pred += pw
+            total_pred /= valid_parts
+            print("Kernel: ", k_funcs_str[i], ", C param:", c, " prediction:", total_pred)
+
 ###############################################################################
 
 def build_plot(params, values, label_suffix, plt_title="Labels"):
@@ -157,9 +211,15 @@ def build_plot(params, values, label_suffix, plt_title="Labels"):
 
 ###############################################################################
 
-def main():
-    filename = "chips.csv" #'geyser.csv'
+def draw_plots(params, values, kernel, c):
+    build_plot(params, values, 'real', 'Real classes')
+    k = build_kernel_matrix(params, kernel)
+    a, b = smo(k, values, c, 200)
+    p = predict(k, values, a, b)
+    print("Prediction: ", prec(k, values, a, b))
+    build_plot(params, p, 'predict', 'Predicted classes')
 
+def draw_file_plots(filename, kernel, c):
     params, values = [], []
     with open(filename) as fp:
         columns = fp.readline()
@@ -171,14 +231,12 @@ def main():
                 values.append(-1)
             else:
                 values.append(1)
+    draw_plots(params, values, kernel, c)
 
-    k = build_kernel_matrix(params, square_kernel)
-    build_plot(params, values, 'real', 'Real classes')
-    a, b = smo(k, values, 5.0, 200)
-    p = predict(k, values, a, b)
-    build_plot(params, p, 'predict', 'Predicted classes')
-
-    print(prec(k, values, a, b))
+def main():
+    #brute_smo(params, values)
+    draw_file_plots('chips.csv', exp_kernel, 2.0)
+    draw_file_plots('geyser.csv', exp_kernel, 1.0)
 
 if __name__ == "__main__":
     main()
