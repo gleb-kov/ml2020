@@ -13,7 +13,8 @@ vector<ll> class_size;
 vector<unordered_map<string, ll>> texts_with_word;
 unordered_set<string> all_words;
  
-ll a, numb;
+ld a;
+ll numb;
  
 ld pr(ll c) {
     return class_size[c] * 1.0 / numb;
@@ -48,6 +49,7 @@ int main() {
         cin >> lambda[i];
     }
     cin >> a >> numb;
+
     for (ll i = 0; i < numb; i++) {
         ll c, cnt;
         cin >> c >> cnt;
@@ -78,6 +80,7 @@ int main() {
  
     ll m;
     cin >> m;
+
     for (ll i = 0; i < m; i++) {
         ll cnt;
         cin >> cnt;
@@ -104,10 +107,17 @@ int main() {
         for (ll cl_index = 0; cl_index < k; cl_index++) {
             sum += results[cl_index];
         }
-        for (ll cl_index = 0; cl_index < k; cl_index++) {
+        /*for (ll cl_index = 0; cl_index < k; cl_index++) {
             cout << fixed << setprecision(10) << results[cl_index] / sum << ' ';
+        }*/
+        ll best_class = 0;
+        for (ll cl_index = 0; cl_index < k; cl_index++) {
+            if (results[cl_index] > results[best_class]) {
+                best_class = cl_index;
+            }
         }
-        cout << '\n';
+        std::cout << best_class + 1 << '\n'; // DIFF: decide best class inplace by argmax
+        // cout << '\n';
     }
     return 0;
 }

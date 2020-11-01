@@ -55,14 +55,14 @@ class BayesSetup:
         self.lambda_spam = 1
 
 # Contract: legit is 1, spam is 2
-def prepare_input(train_parts, test_parts, bayes_setup, inp_path, idx):
-    inp_filename = inp_path + "/inp" + str(idx) + ".txt"
-    ans_filename = inp_path + "/ans" + str(idx) + ".txt"
+def prepare_input(train_parts, test_parts, bayes_setup, home_path, idx):
+    inp_filename = home_path + "/bayes_input/" + str(idx) + ".txt"
+    ans_filename = home_path + "/answers/" + str(idx) + ".txt"
 
     total_train_letters = sum([p.size for p in train_parts])
     total_test_letters = sum([p.size for p in test_parts])
 
-    # fill inp file
+    # fill input file
     with open(inp_filename, 'w') as fd:
         fd.write('2\n')
         fd.write(str(bayes_setup.lambda_legit) + " " + str(bayes_setup.lambda_spam))
@@ -88,16 +88,14 @@ def prepare_input(train_parts, test_parts, bayes_setup, inp_path, idx):
                 fd.write(" ")
                 fd.write(txt)
                 fd.write('\n')
-    # file ans file
+    # fill answer file
     with open(ans_filename, 'w') as fd:
-        fd.write(str(total_test_letters))
-        fd.write('\n')
         for tp in test_parts:
             for let in tp.letters:
                 fd.write("1" if let.is_legit else "2")
                 fd.write('\n')
 
-def main(ds_path, inp_path):
+def main(ds_path, home_path):
     ds = Dataset(ds_path)
     parts = ds.get_parts()
     
@@ -108,12 +106,12 @@ def main(ds_path, inp_path):
     for part_idx in range(len(parts)):
         train = [x for i,x in enumerate(parts) if i != part_idx]
         test = [parts[part_idx]]
-        prepare_input(train, test, bayes_setup, inp_path, part_idx)
+        prepare_input(train, test, bayes_setup, home_path, part_idx)
 
     print("Walker finished")
 
 if __name__ == "__main__":
     home_path = "/home/gleb/github/ml2020/lab4-bayes/"
-    main(home_path + "dataset", home_path + "inputs")
+    main(home_path + "dataset", home_path)
 
 
