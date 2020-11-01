@@ -41,7 +41,7 @@ int main() {
     ll k;
     cin >> k;
  
-    vector<ll> lambda(k);
+    vector<ld> lambda(k);
     texts_with_word.resize(k);
     class_size.resize(k, 0);
  
@@ -116,8 +116,8 @@ int main() {
                 best_class = cl_index;
             }
         }
-        std::cout << best_class + 1 << '\n'; // DIFF: decide best class inplace by argmax
-        // cout << '\n';
+        std::cout << best_class + 1; // DIFF: decide best class inplace by argmax
+        cout << '\n';
     }
     return 0;
 }
