@@ -1,4 +1,4 @@
-echo "fpr,tpr,accuracy" > broot.csv
+echo "lambda_legit,accuracy" > broot.csv
 
 ./run.sh 0.00001    >> broot.csv
 ./run.sh 0.0001     >> broot.csv
@@ -14,6 +14,6 @@ do
   echo "$i iteration"
 done
 
-./cleanup
+./cleanup.sh
 python3 build_plot.py
 

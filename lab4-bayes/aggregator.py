@@ -52,7 +52,8 @@ def main(home_path):
     accuracy /= parts_cnt
 
 #    print("fpr,tpr,accuracy")
-    print(fpr, tpr, accuracy, sep=',')
+#    print(fpr, tpr, accuracy, sep=',')
+    print(accuracy)
 
 if __name__ == "__main__":
     home_path = "/home/gleb/github/ml2020/lab4-bayes/"
