@@ -80,7 +80,7 @@ class Dataset:
 class BayesSetup:
     def __init__(self):
         self.alpha = 0.001
-        self.lambda_legit = 1e35 if len(sys.argv) < 2 else float(sys.argv[1])
+        self.lambda_legit = 1e-5 if len(sys.argv) < 2 else float(sys.argv[1])
         self.lambda_spam = 1e-5
 
 # Contract: legit is 1, spam is 2

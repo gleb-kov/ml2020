@@ -20,5 +20,5 @@ done
 
 rm bayes
 
-# echo "Evaluate accuracy"
+echo "Evaluate accuracy"
 python3 aggregator.py

@@ -107,17 +107,18 @@ int main() {
         for (ll cl_index = 0; cl_index < k; cl_index++) {
             sum += results[cl_index];
         }
-        /*for (ll cl_index = 0; cl_index < k; cl_index++) {
+        /*for (ll cl_index = 0; cl_index < 1; cl_index++) {
             cout << fixed << setprecision(10) << results[cl_index] / sum << ' ';
         }*/
-        ll best_class = 0;
+        cout << fixed << setprecision(10) << results[1] / sum;
+        /*ll best_class = 0;
         for (ll cl_index = 0; cl_index < k; cl_index++) {
             if (results[cl_index] > results[best_class]) {
                 best_class = cl_index;
             }
         }
         std::cout << best_class + 1; // DIFF: decide best class inplace by argmax
-        cout << '\n';
+        */cout << '\n';
     }
     return 0;
 }
