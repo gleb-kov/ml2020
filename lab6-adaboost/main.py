@@ -10,21 +10,21 @@ def classify(h):
     return 1 if h >= 0 else -1
 
 
-def predict(forest, entry):
-    return sum([alpha * tree.predict([entry])[0] for tree, alpha in forest])
+def predict(model, entry):
+    return sum([alpha * tree.predict([entry])[0] for tree, alpha in model])
 
 
-def calculate_accuracy(forest, x, y):
+def calculate_accuracy(model, x, y):
     accuracy = 0
     D = len(y)
     for idx in range(D):
-        h = predict(forest, x.iloc[idx])
+        h = predict(model, x.iloc[idx])
         if classify(h) == y.iloc[idx]:
             accuracy += 1
     return accuracy / len(y)
 
 
-def draw_plots(legend, forest, x, y):
+def draw_plots(legend, model, x, y):
     x_tp, y_tp = [], []
     x_tn, y_tn = [], []
 
@@ -33,7 +33,7 @@ def draw_plots(legend, forest, x, y):
 
     D = len(y)
     for idx in range(D):
-        h = predict(forest, x.iloc[idx])
+        h = predict(model, x.iloc[idx])
         if classify(h) == y.iloc[idx]:
             if y.iloc[idx] == 1:
                 x_tp.append(x['x'][idx])
@@ -69,7 +69,7 @@ def process_dataset(filename, steps=56):
     y = dataset['class']
 
     accuracy = []
-    forest = []
+    model = []
 
     for step in range(1, steps):
         tree = DecisionTreeClassifier(max_depth=4)
@@ -85,12 +85,12 @@ def process_dataset(filename, steps=56):
         for j in range(D):
             w[j] /= norm
 
-        forest.append((tree, alpha))
-        accuracy.append(calculate_accuracy(forest, x, y))
+        model.append((tree, alpha))
+        accuracy.append(calculate_accuracy(model, x, y))
         print(accuracy[-1], len(accuracy))
 
         if step in [1, 2, 3, 5, 8, 13, 21, 34, 55]:
-            draw_plots(f"{filename[:-4]}_{step}", forest, x, y)
+            draw_plots(f"{filename[:-4]}_{step}", model, x, y)
 
     plt.plot(accuracy, 'g')
     plt.grid(True)
